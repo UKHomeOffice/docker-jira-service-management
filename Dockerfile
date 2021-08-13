@@ -39,8 +39,8 @@ RUN set -x \
     && chown -R jira:jira      "${JIRA_INSTALL_DIR}/logs" \
     && chown -R jira:jira      "${JIRA_INSTALL_DIR}/temp" \
     && chown -R jira:jira      "${JIRA_INSTALL_DIR}/work" \
-    && echo -e                 "\njira.home=$JIRA_HOME" >> "${JIRA_INSTALL_DIR}/atlassian-jira/WEB-INF/classes/jira-application.properties" \
     && touch -d "@0"           "${JIRA_INSTALL_DIR}/conf/server.xml"
+    # && echo -e                 "\njira.home=$JIRA_HOME" >> "${JIRA_INSTALL_DIR}/atlassian-jira/WEB-INF/classes/jira-application.properties" \
 
 RUN curl -Ls "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.49.tar.gz" | tar -xz --directory "${JIRA_INSTALL_DIR}/lib" --strip-components=1 --no-same-owner "mysql-connector-java-5.1.49/mysql-connector-java-5.1.49-bin.jar" 
 
