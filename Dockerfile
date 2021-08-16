@@ -1,4 +1,4 @@
-FROM atlassian/jira-servicemanagement:4.17.1-jdk11
+FROM atlassian/jira-servicemanagement:4.17.1-jdk8
 
 ENV JIRA_HOME /var/atlassian/application-data/jira
 ENV JIRA_INSTALL_DIR /opt/atlassian/jira
@@ -22,8 +22,8 @@ RUN wget https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem -O /usr/loc
     && wget https://truststore.pki.rds.amazonaws.com/eu-west-2/eu-west-2-bundle.pem -O /usr/local/share/ca-certificates/eu-west-2-bundle.pem \
     && update-ca-certificates
 
-RUN keytool -importcert -alias rdsRootCA  -file /usr/local/share/ca-certificates/rds-ca-2019-root.pem -noprompt -storepass changeit -trustcacerts -keystore "${JAVA_HOME}/lib/security/cacerts" \
-    && keytool -importcert -alias rdsRegionCA -file /usr/local/share/ca-certificates/eu-west-2-bundle.pem -noprompt -storepass changeit -trustcacerts -keystore "${JAVA_HOME}/lib/security/cacerts"
+RUN keytool -importcert -alias rdsRootCA  -file /usr/local/share/ca-certificates/rds-ca-2019-root.pem -noprompt -storepass changeit -trustcacerts -keystore "${JAVA_HOME}/jre/lib/security/cacerts" \
+    && keytool -importcert -alias rdsRegionCA -file /usr/local/share/ca-certificates/eu-west-2-bundle.pem -noprompt -storepass changeit -trustcacerts -keystore "${JAVA_HOME}/jre/lib/security/cacerts"
 
 RUN set -x \
     && usermod -u 1000 jira \
@@ -39,8 +39,8 @@ RUN set -x \
     && chown -R jira:jira      "${JIRA_INSTALL_DIR}/logs" \
     && chown -R jira:jira      "${JIRA_INSTALL_DIR}/temp" \
     && chown -R jira:jira      "${JIRA_INSTALL_DIR}/work" \
+    && echo -e                 "\njira.home=$JIRA_HOME" >> "${JIRA_INSTALL_DIR}/atlassian-jira/WEB-INF/classes/jira-application.properties" \
     && touch -d "@0"           "${JIRA_INSTALL_DIR}/conf/server.xml"
-    # && echo -e                 "\njira.home=$JIRA_HOME" >> "${JIRA_INSTALL_DIR}/atlassian-jira/WEB-INF/classes/jira-application.properties" \
 
 RUN curl -Ls "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.49.tar.gz" | tar -xz --directory "${JIRA_INSTALL_DIR}/lib" --strip-components=1 --no-same-owner "mysql-connector-java-5.1.49/mysql-connector-java-5.1.49-bin.jar" 
 
